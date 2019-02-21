@@ -8,12 +8,12 @@
 using std::string;
 
 AppendFile::AppendFile(string filename) 
-: fp(fopen(filename.c_str(), "ae")) {
-    setbuffer(fp, buffer, sizeof(buffer));
+: _fp(fopen(filename.c_str(), "ae")) {
+    setbuffer(_fp, _buffer, sizeof(_buffer));
 }
 
 AppendFile::~AppendFile() {
-    fclose(fp);
+    fclose(_fp);
 }
 
 void AppendFile::append(const char* logline, const size_t len) {
@@ -22,7 +22,7 @@ void AppendFile::append(const char* logline, const size_t len) {
     while(remain > 0) {
         size_t last = this->write(logline + n, remain);
         if(last == 0) {
-            int err = ferror(fp);
+            int err = ferror(_fp);
             if(err)
                 fprintf(stderr, "AppendFile::append() failed\n");
             break;
@@ -33,10 +33,10 @@ void AppendFile::append(const char* logline, const size_t len) {
 }
 
 void AppendFile::flush() {
-    fflush(fp);
+    fflush(_fp);
 }
 
 //nonblocking write
 size_t AppendFile::write(const char* logline, size_t len) {
-    return fwrite_unlocked(logline, 1, len, fp);
+    return fwrite_unlocked(logline, 1, len, _fp);
 }

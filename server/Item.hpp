@@ -16,7 +16,7 @@ public:
                             int exptimeArg,
                             int valueLen,
                             uint64_t casArg) {
-        return std::make_shared<Item>(keyArg, flagsArg, exptimeArg, valuelen, casArg);
+        return std::make_shared<Item>(keyArg, flagsArg, exptimeArg, valueLen, casArg);
     }
 
     Item(std::string keyArg,

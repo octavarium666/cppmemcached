@@ -2,6 +2,11 @@
 #include <memory>
 #include <functional>
 #include <pthread.h>
+#include <string>
+#include <sys/syscall.h>
+#include <unistd.h>
+
+
 #include "noncopyable.hpp"
 
 class Thread
@@ -10,26 +15,25 @@ class Thread
 public:
     typedef std::function<void()> ThreadFunc;
 
-    Thread();
+    explicit Thread(const ThreadFunc&, const std::string& name = std::string());
     ~Thread();
 
     void start();
 
     int join();
 
-    bool started() const { return starded; }
+    bool started() const { return _starded; }
 
-    pid_t tid() const { return tid; }
+    pid_t tid() const { return _tid; }
 
-    const std::string& name() const { return name; }
+    const std::string& name() const { return _name; }
 
 
 private:
 
-    bool            starded;
-    bool            joined;
-    pthread_t       pthreadId;
-    pid_t           tid;
-    std::string     name;
-
+    bool            _starded;
+    bool            _joined;
+    pthread_t       _pthreadId;
+    pid_t           _tid;
+    std::string     _name;
 };

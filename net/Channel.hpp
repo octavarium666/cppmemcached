@@ -1,10 +1,11 @@
 #pragma once
 #include "Thread.hpp"
 #include "EventLoop.hpp"
+#include "noncopyable.hpp"
 
 class EventLoop;
 
-class Channel
+class Channel : noncopyable
 {
 
 public:
@@ -14,27 +15,54 @@ public:
 
     void handleEvent();
     void setReadCallback(const EventCallback& cb) {
-        readCallback = cb;
+        _readCallback = cb;
     }
     void setWriteCallback(const EventCallback& cb) {
-        writeCallback = cb;
+        _writeCallback = cb;
     }
     void setErrorCallback(const EventCallback& cb) {
-        errorCallback = cb;
+        _errorCallback = cb;
+    }
+
+    int getFd() {
+        return _fd;
+    }
+    int getEvents() {
+        return _events;
+    }
+    void setRevents(int revt) {
+        _revents = revt;
+    }
+    bool isNoneEvents() const {return _events == noneEvent;}
+
+    void enableReading() { _events |= readEvent; update();}
+
+    int getIndex() const {
+        return _index;
+    }
+    void setIndex(int idx) {
+        _index = idx;
+    }
+    EventLoop* ownerLoop() {
+        return _loop;
     }
 
     ~Channel();
+
 private:
     void update();
+
     static const int readEvent;
+    static const int noneEvent;
+    static const int writeEvent;
 
-    EventLoop*  loop;
-    const int   fd;
-    int         events;
-    int         revents;
-    int         index;
+    EventLoop*  _loop;
+    const int   _fd;
+    int         _events;
+    int         _revents;
+    int         _index;
 
-    EventCallback readCallback;
-    EventCallback writeCallback;
-    EventCallback errorCallback;
+    EventCallback _readCallback;
+    EventCallback _writeCallback;
+    EventCallback _errorCallback;
 };
